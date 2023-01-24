@@ -130,24 +130,33 @@ namespace moneyproject
             }
             else
             {
-                //subtract
-                if (this.integer >= m.integer)
+                var signThis = this.sign;
+                var signM = m.sign;
+
+                this.sign = 1;
+                m.sign = 1;
+
+                var result = this.CompareTo(m);
+                if (result == 1)
                 {
-                    m.sign = this.sign;
+                    this.sign = signThis;
+                }
+                else if (result == -1)
+                {
+                    this.sign = signM;
                 }
                 else
                 {
-                    this.sign = m.sign;
+                    sign = 1;
                 }
-                if(this.fractional >= m.fractional)
-                {
-                    m.sign = this.sign;
-                }
-                else
-                {
-                    this.sign = m.sign;
-                }
-                subtractMoney(m);
+
+
+                uint num1 = convert2cents(this.integer, this.fractional);
+                uint num2 = convert2cents(m.integer, m.fractional);
+
+                uint diff = num1> num2? num1 - num2: num2 - num1;
+                this.integer = diff / 100;
+                this.fractional = diff % 100;
             }
         }
 
@@ -161,18 +170,41 @@ namespace moneyproject
         {
             if (this.sign == m.sign)
             {
+                var tempsign = this.sign;
+
+                this.sign = 1;
+                m.sign = 1;
+
+                var result = this.CompareTo(m); 
+                if(result == 1)
+                {
+                    this.sign = tempsign;
+                }else if(result == -1)
+                {
+                    this.sign = tempsign * -1;
+                }
+                else
+                {
+                    this.sign = 1;
+                }
+
                 uint num1 = convert2cents(this.integer, this.fractional);
                 uint num2 = convert2cents(m.integer, m.fractional);
-
+                
                 uint diff = num1 > num2 ? num1 - num2 : num2 - num1;
                 this.integer = diff / 100;
                 this.fractional = diff % 100;
             }
             else
             {
-                //add
-                m.sign *= -1;
-                addMoney(m) ;
+
+                uint num1 = convert2cents(this.integer, this.fractional);
+                uint num2 = convert2cents(m.integer, m.fractional);
+
+                uint sum = num1 + num2;
+                this.integer = sum / 100;
+                this.fractional = sum % 100;
+
             }
         }
 
